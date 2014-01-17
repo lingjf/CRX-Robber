@@ -24,4 +24,4 @@ Download Chrome extension package, and extract into source files.
 Usage
 ==========
 
-python crxrobber https://chrome.google.com/webstore/detail/style-capture/ndemhkhpinfhbgadphhjdcckjglphfmh
+python crxrobber.py https://chrome.google.com/webstore/detail/style-capture/ndemhkhpinfhbgadphhjdcckjglphfmh

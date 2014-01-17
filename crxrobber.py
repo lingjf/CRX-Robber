@@ -5,7 +5,7 @@
 import sys,os
 import re
 from sets import Set
-import urllib
+import urllib2
 import struct
 import zipfile
 
@@ -28,9 +28,12 @@ def zip_file_name(extension_id):
 	return extension_id + ".zip"	
 
 def download_crx_file(extension_id):
-	os.system("wget '" + crx_download_url(extension_id) + "' --quiet --output-document " + crx_file_name(extension_id))	
+	#os.system("wget '" + crx_download_url(extension_id) + "' --output-document " + crx_file_name(extension_id))	
+	furl = urllib2.urlopen(crx_download_url(extension_id))
+	with open(crx_file_name(extension_id),'wb') as fcrx:
+		fcrx.write(furl.read())
 
-def strips_crx_to_zip(extension_id):
+def convey_crx_to_zip(extension_id):
 	# https://developer.chrome.com/extensions/crx.html
 	with open(crx_file_name(extension_id), 'rb') as fcrx:
 		magic_number = fcrx.read(4)
@@ -81,7 +84,7 @@ def main(argv):
 	extension_ids = get_extension_ids(argv)
 	for extension_id in extension_ids:
 		download_crx_file(extension_id)
-		strips_crx_to_zip(extension_id)
+		convey_crx_to_zip(extension_id)
 		extracts_zip_file(extension_id)
 		print 
 		print extension_id + " captured."
