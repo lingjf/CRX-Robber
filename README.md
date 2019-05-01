@@ -1,7 +1,11 @@
 # uncrx
 Extract crx into Chrome extension package source files.
-Extracting allows installing an unsigned crx file (via Extensions,
-Developer Mode, )
+
+## Poikilos fork
+* You can extract existing files, such as to allow
+  installing an unsigned extension from the resulting directory
+  (via Extensions, Developer Mode, Load unpacked).
+* You can extract crx files with format version 3
 
 ## Usage
 
