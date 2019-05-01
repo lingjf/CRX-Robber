@@ -1,27 +1,19 @@
-CRX-Robber
-==========
+# uncrx
+Extract crx into Chrome extension package source files.
+Extracting allows installing an unsigned crx file (via Extensions,
+Developer Mode, )
 
-Download Chrome extension package, and extract into source files.
+## Usage
 
+```
+python uncrx.py https://chrome.google.com/webstore/detail/style-capture/ndemhkhpinfhbgadphhjdcckjglphfmh
+```
+or
+(if already downloaded)
+```
+python uncrx.py filename.crx
+```
 
-
-1) Download crx files from chrome webstore
-
-  There is no download button in chrome webstore. Althougth crx file is downloaded and saved to secret place, 
-  it will be removed after installation. It is difficlut to fetch crx normally.
-  
-  http://productforums.google.com/forum/#!topic/chrome/g02KlhK12fU
-  
-2) Convey crx files to zip files
-
-	In fact, crx is a zip file plus specific header. https://developer.chrome.com/extensions/crx.html.
-
-	Removing specific header to convey crx to zip file.
-	 
-3) Extract zip files
-
-
-Usage
-==========
-
-python crxrobber.py https://chrome.google.com/webstore/detail/style-capture/ndemhkhpinfhbgadphhjdcckjglphfmh
+## Developer Notes
+The crx format is a zip file preceded by a special header (see
+<https://developer.chrome.com/extensions/crx.html>).
