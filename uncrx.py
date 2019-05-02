@@ -13,24 +13,32 @@ python_mr = 3  # major revision
 try:
     import urllib.request
     request = urllib.request
+    from urllib.request import urlopen
 except:
     # python2
     python_mr = 2
     import urllib2 as urllib
     request = urllib
+    urlopen = urllib.urlopen
 
 u = "https://clients2.google.com/service/update2/crx?response=redirect&x=id%3D"
 
 
 def get_extension_ids(argv):
     ids = set()
-    for x in argv:
-        m = re.search(r"([a-z]{32})", x)
+    for arg in argv:
+        m = re.search(r"([a-z]{32})", arg)
         if m is not None:
             for d in m.groups():
                 ids.add((d, None))
+        elif "https://" not in arg:
+            if os.path.isfile(arg):
+                ids.add((None, arg))
+            else:
+                print("* '" + arg + "' does not exist.")
         else:
-            ids.add((None, x))
+            print("* '" + arg + "' is neither an 'Add to chrome' URL"
+                  " nor a local file path.")
     return ids
 
 
@@ -49,15 +57,26 @@ def zip_file_name(name):
 def download_crx(extension_id):
     # os.system("wget '" + crx_download_url(extension_id)
     #           + "' --output-document " + crx_file_name(extension_id))
-    furl = urllib.urlopen(crx_download_url(extension_id))
-    ok = False
+    url_s = crx_download_url(extension_id)
+    furl = urlopen(url_s)
     filename = crx_file_name(extension_id)
-    with open(filename, 'wb') as fcrx:
-        fcrx.write(furl.read())
-        ok = True
-    if not ok:
+    print("* downloading '" + url_s + "'...")
+    size = 0
+    with open(filename, 'wb') as crx_out:
+        chunk = True
+        while chunk:
+            chunk = furl.read(1024)
+            if len(chunk) < 1:
+                break
+            crx_out.write(chunk)
+            size += len(chunk)
+    if size < 1:
         filename = None
-        print("URL has nothing to read.")
+        print("  - The URL has nothing to read. The current")
+        print("    chrome web store website is not supported.")
+        print("    Download the file first.")
+    else:
+        print("  - downloaded " + str(size/1024) + "KB")
     return filename
 
 def name_to_id(filename):
@@ -75,8 +94,8 @@ def crx_to_zip(filename):
     # if extension_id is None:
         # extension_id = name_to_id(filename)
 
-    with open(filename, 'rb') as fcrx:
-        magic_number = fcrx.read(4)
+    with open(filename, 'rb') as crx_in:
+        magic_number = crx_in.read(4)
         magic_number_s = None
         magic_number_s = magic_number.decode('utf-8')
         if magic_number_s != "Cr24":
@@ -84,18 +103,18 @@ def crx_to_zip(filename):
             print("  - magic number is " + magic_number_s)
             exit(1)
 
-        version = fcrx.read(4)
+        version = crx_in.read(4)
         version, = struct.unpack(b"<I", version)
 
         print("  - version: " + str(version))
 
-        public_key_length_s = fcrx.read(4)
+        public_key_length_s = crx_in.read(4)
         public_key_length, = struct.unpack(b"<I", public_key_length_s)
         print("  - public_key_length: " + str(public_key_length))
         zip_sig = b"\x50\x4b\x03\x04"
 
         if version == 2:
-            signature_key_length = fcrx.read(4)
+            signature_key_length = crx_in.read(4)
             signature_key_length, = struct.unpack(b"<I",
                                                   signature_key_length)
             print("  - signature_key_length: " + str(signature_key_length))
@@ -104,7 +123,7 @@ def crx_to_zip(filename):
                       " signature_key_length " + str(signature_key_length)
                       + " ('" + public_key_length_s.decode('utf-8') + "')")
 
-            fcrx.seek(public_key_length + signature_key_length, os.SEEK_CUR)
+            crx_in.seek(public_key_length + signature_key_length, os.SEEK_CUR)
         zip_name = zip_file_name(filename)
         wrote = 0
         if zip_name is None:
@@ -114,7 +133,7 @@ def crx_to_zip(filename):
             with open(zip_name, 'wb') as fzip:
                 buf = " "
                 while buf:  # len(buf) > 0
-                    buf = fcrx.read(1)
+                    buf = crx_in.read(1)
                     # print("    - '" + buf.decode('utf-8') + "'")
                     if buf:
                         ret = zip_name
@@ -127,6 +146,7 @@ def crx_to_zip(filename):
         if wrote < 1:
             print("  - wrote 0 bytes to file (%s)." % zip_name)
     return ret
+
 
 def extract_zip(zipfilename):
     unziptodir = name_to_id(zipfilename)
@@ -173,7 +193,12 @@ def main(argv):
             exit(4)
         print("  - extracted to '" + unz_name + "'")
     if count < 1:
-        print("You must provide a URL.")
+        print("")
+        print("You must provide a local path to a crx file")
+              # " or the full 'Add to chrome' URL starting with"
+              # " https://.")
+        print("")
+        print("")
 
 
 if __name__ == "__main__":
