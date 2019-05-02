@@ -2,9 +2,7 @@
 Extract crx into Chrome extension package source files.
 
 ## Poikilos fork
-* You can extract existing files, such as to allow
-  installing an unsigned extension from the resulting directory
-  (via Extensions, Developer Mode, Load unpacked).
+* You can extract existing (already downloaded) files
 * You can extract crx files with format version 3
 
 ## Usage
@@ -17,6 +15,13 @@ or
 ```
 python uncrx.py filename.crx
 ```
+
+## Optional steps
+Installing an unsigned extension from the resulting directory:
+* Menu button, "More," "Extensions"
+* Turn on Developer Mode.
+* Click the "Load unpacked" button
+* Choose the directory you extracted.
 
 ## Developer Notes
 The crx format is a zip file preceded by a special header (see
