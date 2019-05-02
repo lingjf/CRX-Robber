@@ -12,10 +12,11 @@ Changelog](https://keepachangelog.com/en/1.0.0/).
 * Simplify README.md.
 * Shorten function names.
 * Allow filename instead of URL.
-  - Make functions more functional (take param, return result).
+  - Make functions more functional (take param, return result, avoid
+    repeatedly generating same metadata).
 * Conform to PEP8.
 * Return nonzero on error.
 * Convert to Python 3.
 * Compare None properly.
-* Correctly handle result of fcrx.read(1) (in `rb` mode).
-* Correctly read crx v3 (only try to read signature_key_length if v2)
+* Handle result of fcrx.read(1) (in `rb` mode) in a more standard way.
+* Correctly read crx v3 (only try to read signature_key_length if v2).
