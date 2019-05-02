@@ -11,6 +11,10 @@ Extract crx into Chrome extension package source files.
 ```
 python uncrx.py filename.crx
 ```
+* If the extension is on the chrome web store, this program is not
+  needed. Install the extension using Chrome, and Chrome itself will
+  extract the crx file to
+  "%LOCALAPPDATA%\Google\Chrome\User Data\Default\Extensions".
 
 ## Optional steps
 Installing an unsigned extension from the resulting directory:
