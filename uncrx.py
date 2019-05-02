@@ -113,7 +113,7 @@ def crx_to_zip(filename):
         print("  - public_key_length: " + str(public_key_length))
         zip_sig = b"\x50\x4b\x03\x04"
 
-        if version == 2:
+        if version <= 2:
             signature_key_length = crx_in.read(4)
             signature_key_length, = struct.unpack(b"<I",
                                                   signature_key_length)
