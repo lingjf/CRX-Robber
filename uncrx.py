@@ -61,6 +61,10 @@ def download_crx(extension_id):
     return filename
 
 def name_to_id(filename):
+    if filename[-4:].lower() == ".zip":
+        filename = filename[:-4]
+    if filename[-4:].lower() == ".crx":
+        filename = filename[:-4]
     return filename.replace(".", "-")
 
 def crx_to_zip(filename):
