@@ -1,27 +1,35 @@
-CRX-Robber
-==========
+# uncrx
+Extract crx into Chrome extension package source files.
 
-Download Chrome extension package, and extract into source files.
+## Poikilos fork
+* You can extract existing (already downloaded) files.
+* You can extract crx version 3 files.
 
+## Usage
 
+* Download crx file
+```
+python uncrx.py filename.crx
+```
+* If the extension is on the chrome web store, this program is not
+  needed. Install the extension using Chrome, and Chrome itself will
+  extract the crx file to
+  "%LOCALAPPDATA%\Google\Chrome\User Data\Default\Extensions".
 
-1) Download crx files from chrome webstore
+## Optional steps
+Installing an unsigned extension from the resulting directory:
+* Menu button, "More," "Extensions"
+* Turn on Developer Mode.
+* Click the "Load unpacked" button
+* Choose the directory you extracted.
 
-  There is no download button in chrome webstore. Althougth crx file is downloaded and saved to secret place, 
-  it will be removed after installation. It is difficlut to fetch crx normally.
-  
-  http://productforums.google.com/forum/#!topic/chrome/g02KlhK12fU
-  
-2) Convey crx files to zip files
+## Developer Notes
+The crx format is a zip file preceded by a special header (see
+<https://developer.chrome.com/extensions/crx.html>).
 
-	In fact, crx is a zip file plus specific header. https://developer.chrome.com/extensions/crx.html.
+The Chrome web store doesn't seem to allow downloading anymore, or has
+changed too much, so the following example fails:
+```
+python uncrx.py https://chrome.google.com/webstore/detail/style-capture/ndemhkhpinfhbgadphhjdcckjglphfmh
+```
 
-	Removing specific header to convey crx to zip file.
-	 
-3) Extract zip files
-
-
-Usage
-==========
-
-python crxrobber.py https://chrome.google.com/webstore/detail/style-capture/ndemhkhpinfhbgadphhjdcckjglphfmh
