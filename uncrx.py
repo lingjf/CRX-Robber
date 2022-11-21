@@ -9,14 +9,11 @@ try:
     set
 except NameError:
     from sets import Set as set
-python_mr = 3  # major revision
-try:
+if sys.version_info.major >= 3
     import urllib.request
     request = urllib.request
     from urllib.request import urlopen
-except:
-    # python2
-    python_mr = 2
+else:
     import urllib2 as urllib
     request = urllib
     urlopen = urllib.urlopen
