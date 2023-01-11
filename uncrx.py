@@ -5,16 +5,19 @@ import os
 import re
 import struct
 import zipfile
+
 try:
     set
 except NameError:
     from sets import Set as set
-if sys.version_info.major >= 3
+if sys.version_info.major >= 3:
     import urllib.request
+
     request = urllib.request
     from urllib.request import urlopen
 else:
     import urllib2 as urllib
+
     request = urllib
     urlopen = urllib.urlopen
 
@@ -34,8 +37,10 @@ def get_extension_ids(argv):
             else:
                 print("* '" + arg + "' does not exist.")
         else:
-            print("* '" + arg + "' is neither an 'Add to chrome' URL"
-                  " nor a local file path.")
+            print(
+                "* '" + arg + "' is neither an 'Add to chrome' URL"
+                " nor a local file path."
+            )
     return ids
 
 
@@ -59,7 +64,7 @@ def download_crx(extension_id):
     filename = crx_file_name(extension_id)
     print("* downloading '" + url_s + "'...")
     size = 0
-    with open(filename, 'wb') as crx_out:
+    with open(filename, "wb") as crx_out:
         chunk = True
         while chunk:
             chunk = furl.read(1024)
@@ -73,8 +78,9 @@ def download_crx(extension_id):
         print("    chrome web store website is not supported.")
         print("    Download the file first.")
     else:
-        print("  - downloaded " + str(size/1024) + "KB")
+        print("  - downloaded " + str(size / 1024) + "KB")
     return filename
+
 
 def name_to_id(filename):
     if filename[-4:].lower() == ".zip":
@@ -83,42 +89,47 @@ def name_to_id(filename):
         filename = filename[:-4]
     return filename.replace(".", "-")
 
+
 def crx_to_zip(filename):
     # https://developer.chrome.com/extensions/crx.html
     ret = None
     # if filename is None:
-        # filename = crx_file_name(extension_id)
+    # filename = crx_file_name(extension_id)
     # if extension_id is None:
-        # extension_id = name_to_id(filename)
+    # extension_id = name_to_id(filename)
 
-    with open(filename, 'rb') as crx_in:
+    with open(filename, "rb") as crx_in:
         magic_number = crx_in.read(4)
         magic_number_s = None
-        magic_number_s = magic_number.decode('utf-8')
+        magic_number_s = magic_number.decode("utf-8")
         if magic_number_s != "Cr24":
             print("ERROR: '" + filename + "' is not a valid crx file.")
             print("  - magic number is " + magic_number_s)
             exit(1)
 
         version = crx_in.read(4)
-        version, = struct.unpack(b"<I", version)
+        (version,) = struct.unpack(b"<I", version)
 
         print("  - version: " + str(version))
 
         public_key_length_s = crx_in.read(4)
-        public_key_length, = struct.unpack(b"<I", public_key_length_s)
+        (public_key_length,) = struct.unpack(b"<I", public_key_length_s)
         print("  - public_key_length: " + str(public_key_length))
         zip_sig = b"\x50\x4b\x03\x04"
 
         if version <= 2:
             signature_key_length = crx_in.read(4)
-            signature_key_length, = struct.unpack(b"<I",
-                                                  signature_key_length)
+            (signature_key_length,) = struct.unpack(b"<I", signature_key_length)
             print("  - signature_key_length: " + str(signature_key_length))
-            if signature_key_length > 1024*4/8:
-                print("    - WARNING: larger than normal"
-                      " signature_key_length " + str(signature_key_length)
-                      + " ('" + public_key_length_s.decode('utf-8') + "')")
+            if signature_key_length > 1024 * 4 / 8:
+                print(
+                    "    - WARNING: larger than normal"
+                    " signature_key_length "
+                    + str(signature_key_length)
+                    + " ('"
+                    + public_key_length_s.decode("utf-8")
+                    + "')"
+                )
 
             crx_in.seek(public_key_length + signature_key_length, os.SEEK_CUR)
         zip_name = zip_file_name(filename)
@@ -127,7 +138,7 @@ def crx_to_zip(filename):
             print("  - can't generate zip name from " + str(filename))
         try:
             print("  - writing '%s'..." % zip_name)
-            with open(zip_name, 'wb') as fzip:
+            with open(zip_name, "wb") as fzip:
                 buf = " "
                 while buf:  # len(buf) > 0
                     buf = crx_in.read(1)
@@ -152,15 +163,15 @@ def extract_zip(zipfilename):
 
     zfobj = zipfile.ZipFile(zipfilename)
     for name in zfobj.namelist():
-        name = name.replace('\\', '/')
-        if name.endswith('/'):
+        name = name.replace("\\", "/")
+        if name.endswith("/"):
             os.mkdir(os.path.join(unziptodir, name))
         else:
             ext_filename = os.path.join(unziptodir, name)
             ext_dir = os.path.dirname(ext_filename)
             if not os.path.exists(ext_dir):
                 os.mkdir(ext_dir, 0o0777)
-            outfile = open(ext_filename, 'wb')
+            outfile = open(ext_filename, "wb")
             outfile.write(zfobj.read(name))
             outfile.close()
     return unziptodir
@@ -192,8 +203,8 @@ def main(argv):
     if count < 1:
         print("")
         print("You must provide a local path to a crx file")
-              # " or the full 'Add to chrome' URL starting with"
-              # " https://.")
+        # " or the full 'Add to chrome' URL starting with"
+        # " https://.")
         print("")
         print("")
 
